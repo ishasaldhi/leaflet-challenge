@@ -16,7 +16,12 @@ base.addTo(map); // Add the base tile to the map
 
 
 d3.json("https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/2.5_week.geojson").then(function(data){
-    function setUp(feature){
+
+let legend = L.control({ //create a legend
+    position: "topright"
+});
+
+function setUp(feature){
         //console.log(feature.geometry.coordinates[2])
         return {
               //set color by depth
@@ -27,11 +32,12 @@ d3.json("https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/2.5_week.geoj
             weight: 0.5,
             stroke: true,
             fillColor: colorDepth(feature.geometry.coordinates[2]),
-            //color: "#000000"
+            //color: "#ffffff"
         };
     }
 
     function colorDepth(depth){
+        //establish depths
         switch (true) {
             case depth > 300:
                 return "#8b2cea";
@@ -55,19 +61,13 @@ d3.json("https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/2.5_week.geoj
     }
 
     function radiusMag(magn) {
-        if (magn === 0) {
-          return 1;
-        }
-    
         return magn*5;
       }
 
     L.geoJson(data, {
         style: setUp,
 
-        pointToLayer: function (feature, point) {
-            return L.circleMarker(point);
-          },
+        
 
         onEachFeature: function(feature, layer){
             layer.bindPopup(
@@ -78,13 +78,14 @@ d3.json("https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/2.5_week.geoj
                 + "</br>Magnitude: "
                 +feature.properties.mag
             );
-        }
+        },
+
+        pointToLayer: function (feature, point) {
+            return L.circleMarker(point);
+          },
 
     }).addTo(map)
 
-    let legend = L.control({
-        position: "topright"
-    });
 
     legend.onAdd = function() {
         let div = L.DomUtil.create("div", "info legfedn")
